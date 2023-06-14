@@ -1,5 +1,5 @@
 import csv
-
+import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 import locale
@@ -11,6 +11,7 @@ import os
 class  Parser:
     def __init__(self):
         self.log_data = []
+        self.all_data = []
         pass
 
     def agent(self):
@@ -36,6 +37,29 @@ class  Parser:
             titles_mass.append(title)
         return titles_mass
 
+    def all_info(self):
+        info = {}
+
+        tablse = self.soup.find_all(class_= 'table table-bordered table-striped fs14 mb40')
+        for table in tablse:
+            tr = table.find_all('td')
+            for td in tr:
+                td = td.get_text().strip()
+                self.all_data.append(td)
+
+        # return self.all_data
+
+    def execl_maker(self):
+        columns = [self.all_data[i] for i in range(len(self.all_data)) if i % 2 == 0]
+        # Создаем пустой DataFrame
+        df = pd.DataFrame(columns=columns)
+
+        # Добавляем значения в DataFrame
+        for i in range(1, len(self.all_data), 2):
+            df.loc[0, columns[i // 2]] = self.all_data[i]
+        df.to_excel('output.xlsx', index=False)
 par = Parser()
 par.agent()
-print(par.parse_head())
+par.all_info()
+par.execl_maker()
+# print(par.parse_head())
