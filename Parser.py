@@ -46,36 +46,68 @@ class  Parser:
 
     def get_links(self):
         links = []
-        with open("Онлайн информация.html", encoding='UTF-8') as file:
-            src = file.read()
-
+        HEADERS_test = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0'
+                          ' YaBrowser/23.3.0.2246 Yowser/2.5 Safari/537.36', 'accept': '*/*'}
+        url = 'https://lk.rs-class.org/regbook/regbookVessel'
+        params = {
+            'gorodRegbook_name': '',
+            'countryId_name': '%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F',
+            'statgr_name': '',
+            'icecat_name': '',
+            'gorodRegbook': '',
+            'countryId': '6CF1E5F4-2B6D-4DC6-836B-287154684870',
+            'statgr': '',
+            'icecat': '',
+            'namer': ''
+        }
+        # with open("Онлайн информация.html", encoding='UTF-8') as file:
+        #     src = file.read()
+        response = requests.get(url, params=params, headers=HEADERS_test)
+        src = response.text
         soup = BeautifulSoup(src, 'lxml')
         wrapper = soup.find(class_='table table-bordered table-striped fs14')
         linkers = wrapper.find_all('a')
         for link in linkers:
-            link = link.get('href')
+            link = 'https://lk.rs-class.org/regbook/'+ link.get('href')
             links.append(link)
-
 
         return links
 
     def get_all_links_selenium(self):
 
-
-        driver = webdriver.Chrome(executable_path = 'chromedriver.exe')
-        driver.get('https://lk.rs-class.org/regbook/regbookVessel')
-        # driver.execute_script("lite('getDictionary2?d=countryId&f=formfield')")
-        #Рабочий код
-        wait = WebDriverWait(driver, 1)
-        country_input = wait.until(EC.presence_of_element_located((By.ID, "countryId_name")))
-
-        # Кликаем на поле ввода, чтобы открыть модальное окно
-        country_input.click()
-        #####################################################
-        frame = wait.until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe[name='h-100 bx-core bx-no-touch bx-no-retina bx-chrome']")))
-        # Выводим код фрейма модального окна
-        print(frame)
-
+        HEADERS_test = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0'
+                          ' YaBrowser/23.3.0.2246 Yowser/2.5 Safari/537.36', 'accept': '*/*'}
+        # driver = webdriver.Chrome(executable_path = 'chromedriver.exe')
+        # driver.get('https://lk.rs-class.org/regbook/regbookVessel')
+        # # driver.execute_script("lite('getDictionary2?d=countryId&f=formfield')")
+        # #Рабочий код
+        # wait = WebDriverWait(driver, 1)
+        # country_input = wait.until(EC.presence_of_element_located((By.ID, "countryId_name")))
+        #
+        # # Кликаем на поле ввода, чтобы открыть модальное окно
+        # country_input.click()
+        # #####################################################
+        # frame = wait.until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR, "iframe[name='h-100 bx-core bx-no-touch bx-no-retina bx-chrome']")))
+        # # Выводим код фрейма модального окна
+        # print(frame)
+        url = 'https://lk.rs-class.org/regbook/regbookVessel'
+        params = {
+            'gorodRegbook_name': '',
+            'countryId_name': '%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D1%8F',
+            'statgr_name': '',
+            'icecat_name': '',
+            'gorodRegbook': '',
+            'countryId': '6CF1E5F4-2B6D-4DC6-836B-287154684870',
+            'statgr': '',
+            'icecat': '',
+            'namer': ''
+        }
+        response = requests.get(url, params=params,headers=HEADERS_test)
+        src = response.text
+        soup = BeautifulSoup(src, 'lxml')
+        print(soup)
         # Ожидаем появления кнопки "Найти" и кликаем на нее
         # find_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.btn.btn-primary[type='submit']")))
         # find_button.click()
@@ -90,7 +122,7 @@ class  Parser:
         #
         # soup = BeautifulSoup(html, 'lxml')
 
-        driver.quit()
+        # driver.quit()
         # wrapper = soup.find_all(class_='col-12 col-md-10 col-main-with-sidebar pl0 pr0')
         # links = []
         # step = self.soup.find(class_ = 'myTable0')
@@ -110,7 +142,7 @@ class  Parser:
 
         links = self.get_links()
         t = len(links)
-        for link in range(10):
+        for link in range(t):
             req = requests.get(links[link], headers=HEADER, params=None)
             src = req.text
             soup = BeautifulSoup(src, 'lxml')
@@ -168,6 +200,7 @@ class  Parser:
         # Запись DataFrame в Excel-документ
         df.to_excel('data.xlsx', index=False)
 par = Parser()
+# par.get_all_links_selenium()
 # par.agent()
 
 # print(par.all_info_optimazed())
