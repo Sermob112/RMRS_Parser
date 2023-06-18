@@ -1,16 +1,33 @@
-# This is a sample Python script.
+import  Parser
+import sys
+soup = 0
+from Parser import *
+from Interface import *
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def parse_wrapper():
+    print(path)
+    par = Parser()
+    par.get_links()
+    par.all_info(window)
+    par.execl_maker(path)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+
+def application():
+    global window
+    app = QApplication(sys.argv)
+    window = mywindow()
+    window.show()
+
+    def handle_save_file_dialog():
+        global path
+        path = window.saveFileDialog()
+
+    window.SelectCatalog.clicked.connect(handle_save_file_dialog)
+    window.ParseBut.clicked.connect(parse_wrapper)
 
 
-# Press the green button in the gutter to run the script.
+
+    sys.exit(app.exec_())
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    application()

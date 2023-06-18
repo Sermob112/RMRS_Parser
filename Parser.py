@@ -2,22 +2,19 @@ import csv
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
-import time
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import locale
-import re
+from PyQt5.QtWidgets import QApplication
+import Interface
 
-import json
-import os
+
 href="vessel?fleet_id=1102"
-class  Parser:
+class  Parser():
     def __init__(self):
+        super(Parser, self).__init__()
         self.log_data = []
         self.all_data = []
-        pass
+        self.current_iteration = 0
+
+
 
     def agent(self):
         try:
@@ -71,7 +68,6 @@ class  Parser:
         for link in linkers:
             link = 'https://lk.rs-class.org/regbook/'+ link.get('href')
             links.append(link)
-
         return links
 
     def get_all_links_selenium(self):
@@ -133,7 +129,9 @@ class  Parser:
         #     links.append(link)
         # return links
 
-    def all_info(self):
+    def all_info(self, window):
+
+
         HEADER = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0'
                           ' YaBrowser/23.3.0.2246 Yowser/2.5 Safari/537.36', 'accept': '*/*'}
@@ -142,7 +140,9 @@ class  Parser:
 
         links = self.get_links()
         t = len(links)
-        for link in range(t):
+        self.maxIteration(t)
+
+        for link in range(100):
             req = requests.get(links[link], headers=HEADER, params=None)
             src = req.text
             soup = BeautifulSoup(src, 'lxml')
@@ -151,8 +151,8 @@ class  Parser:
                 table = table.get_text().strip()
                 self.all_data.append(table)
             i = i + 1
-            print(f"текущая итерация {i} из {t}")
-
+            window.update_label(i,t)
+            QApplication.processEvents()
 
 
         return self.all_data
@@ -173,7 +173,10 @@ class  Parser:
             table = table.get_text().strip()
             all_data.append(table)
         return all_data
-    def execl_maker(self):
+
+    def maxIteration(self, value):
+        return value
+    def execl_maker(self, path = 'C:/Users/username'):
         # columns = [self.all_data[i] for i in range(len(self.all_data)) if i % 2 == 0]
         # # Создаем пустой DataFrame
         # df = pd.DataFrame(columns=columns)
@@ -198,16 +201,16 @@ class  Parser:
         df = pd.DataFrame({column: values for column, values in zip(columns, columns_data)})
         #
         # Запись DataFrame в Excel-документ
-        df.to_excel('data.xlsx', index=False)
-par = Parser()
-# par.get_all_links_selenium()
-# par.agent()
-
-# print(par.all_info_optimazed())
-par.get_links()
-par.all_info()
-
-# print(par.get_all_links())
+        df.to_excel(f'{path}\Результат парсинга.xlsx', index=False)
+# par = Parser()
+# # par.get_all_links_selenium()
+# # par.agent()
+#
+# # print(par.all_info_optimazed())
+# par.get_links()
 # par.all_info()
-par.execl_maker()
-# print(par.parse_head())
+#
+# # print(par.get_all_links())
+# # par.all_info()
+# par.execl_maker()
+# # print(par.parse_head())
